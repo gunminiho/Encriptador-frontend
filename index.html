@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet">
+    <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap"
       rel="stylesheet">
     <link rel="stylesheet" href="./styles.css">
@@ -18,6 +21,24 @@
       <div class="subtitle">Encripta/desencripta individual y masivamente tus
         archivos</div>
     </header>
+    <!-- Consola de logs -->
+    <section class="card console-card" id="console-card">
+      <div class="card-header" style="gap:12px; align-items:center;">
+        <span class="badge">Logs</span>
+        <h3 class="card-title">Consola</h3>
+        <div
+          style="margin-left:auto; display:flex; gap:10px; align-items:center;">
+          <label class="chip"
+            style="display:flex; align-items:center; gap:6px;">
+            <input id="log-autoscroll" type="checkbox" checked />
+            autoscroll
+          </label>
+          <button id="log-clear" class="ghost">Limpiar</button>
+        </div>
+      </div>
+      <div id="console-body" class="console-body" role="log"
+        aria-live="polite"></div>
+    </section>
 
     <main class="grid">
       <!-- ENCRIPTAR -->
