@@ -218,7 +218,6 @@ function resetUI(button, progressEl, statusEl, initialLabel){
       // múltiples archivos como "file"
       [...filesEl.files].forEach(f => fd.append('file', f));
       if (csvEl.files?.length) fd.append('passwords', csvEl.files[0]);
-      if (passEl.value) fd.append('password', passEl.value);
 
       const {blob, resp} = await downloadWithProgress({
         url: API_BASE + ENDPOINTS.massive,
