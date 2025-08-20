@@ -133,3 +133,55 @@ progress::-moz-progress-bar{ background: linear-gradient(90deg, var(--accent), v
 @media (min-width: 1100px){
   .card-body{min-height: 260px}
 }
+
+/* --- Barra visual de progreso (todas las cards) --- */
+#card-encrypt .progress,
+#card-decrypt .progress,
+#card-massive .progress {
+  position: relative;
+  gap: 10px;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Ocultamos la barra nativa solo en estas cards (seguimos usando el <progress> para accesibilidad) */
+#card-encrypt progress,
+#card-decrypt progress,
+#card-massive progress {
+  display: none;
+}
+
+.visual-progress {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: #0a0f24;
+  border: 1px solid #1e2759;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(122,162,255,.06);
+}
+
+.visual-progress .fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 18px #7aa2ff55;
+  transition: width .18s ease;
+}
+
+/* Modo indeterminado si no hay Content-Length */
+.visual-progress.indeterminate .fill {
+  width: 40%;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.35) 50%, rgba(255,255,255,.18) 100%),
+    linear-gradient(90deg, var(--accent), var(--accent-2));
+  background-size: 200% 100%, 100% 100%;
+  animation: indet-slide 1.2s linear infinite;
+}
+
+@keyframes indet-slide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}

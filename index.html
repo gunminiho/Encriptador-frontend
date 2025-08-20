@@ -41,7 +41,12 @@
           <div class="divider"></div>
           <div class="actions" style="display: flex; flex-direction: column;">
             <button id="enc-btn">Encriptar</button>
-            <div class="progress" aria-live="polite">
+            <div class="progress" aria-live="polite" style="width: 100%;">
+              <!-- barra visual -->
+              <div class="visual-progress" id="enc-visual"
+                style="border: 1px solid var(--accent); border-radius: 4px; width: 100%; overflow: hidden;"><div
+                  class="fill"></div></div>
+              <!-- barra nativa (oculta aquí, útil para accesibilidad) -->
               <progress id="enc-progress" value="0" max="100"></progress>
               <span id="enc-status" class="status">—</span>
             </div>
@@ -49,7 +54,8 @@
           <div class="hint">La contraseña debe tener al menos 1 carácter.</div>
         </div>
         <div class="footer-hint">
-          <span class="chip" style="font-size:x-small;">Agrega .enc al nombre original del archivo
+          <span class="chip" style="font-size:x-small;">Agrega .enc al nombre
+            original del archivo
             <code>Content-Disposition</code></span>
         </div>
       </section>
@@ -75,10 +81,16 @@
           <div class="divider"></div>
           <div class="actions" style="display: flex; flex-direction: column;">
             <button id="dec-btn">Desencriptar</button>
-            <div class="progress" aria-live="polite">
+            <div class="progress" aria-live="polite" style="width: 100%;">
+              <!-- barra visual -->
+              <div class="visual-progress" id="dec-visual"
+                style="border: 1px solid var(--accent); border-radius: 4px; width: 100%; overflow: hidden;"><div
+                  class="fill"></div></div>
+              <!-- barra nativa (oculta aquí, útil para accesibilidad) -->
               <progress id="dec-progress" value="0" max="100"></progress>
               <span id="dec-status" class="status">—</span>
             </div>
+
           </div>
           <div class="hint">La contraseña debe tener al menos 1 carácter y el
             archivo debe tener extension .enc</div>
@@ -108,7 +120,14 @@
           <div class="divider"></div>
           <div class="actions" style="display: flex; flex-direction: column;">
             <button id="mass-btn">Encriptar archivos!</button>
-            <div class="progress" aria-live="polite">
+            <div class="progress" aria-live="polite" style="width: 100%;">
+              <!-- ✅ Barra visual -->
+              <div class="visual-progress" id="mass-visual" aria-hidden="true"
+                style="border: 1px solid var(--accent); border-radius: 4px; width: 100%; overflow: hidden;">
+                <div class="fill"></div>
+              </div>
+
+              <!-- barra nativa (oculta en esta card pero útil para lectores de pantalla) -->
               <progress id="mass-progress" value="0" max="100"></progress>
               <span id="mass-status" class="status">—</span>
             </div>

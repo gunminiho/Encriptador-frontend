@@ -14,6 +14,21 @@ const API_KEY = 'tenants API-Key 9fe1a2f9-a69c-4b6f-9e96-6ee13586c26b';
 // =========================
 const $ = (sel) => document.querySelector(sel);
 
+function setVisualProgress(visualEl, percent, determinate) {
+  if (!visualEl) return;
+  const fill = visualEl.querySelector('.fill');
+  if (!fill) return;
+
+  if (determinate) {
+    visualEl.classList.remove('indeterminate');
+    fill.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+  } else {
+    visualEl.classList.add('indeterminate');
+    fill.style.width = '40%';
+  }
+}
+
+
 function parseFilenameFromCD(response) {
   const cd = response.headers.get('Content-Disposition') || '';
   // Soporta filename* (RFC 5987) y filename="..."
@@ -37,22 +52,24 @@ function setBusy(button, busy) {
   button.disabled = !!busy;
 }
 
-function updateProgressUI(progressEl, statusEl, loaded, total) {
+function updateProgressUI(progressEl, statusEl, loaded, total, visualEl) {
   if (total > 0) {
-    const pct = Math.max(0, Math.min(100, Math.round(loaded / total * 100)));
+    const pct = Math.max(0, Math.min(100, Math.round((loaded / total) * 100)));
     progressEl.max = 100;
     progressEl.value = pct;
-    const remain = 100 - pct;
-    statusEl.textContent = `${pct}% — faltan ${remain}% (${bytes(total - loaded)} de ${bytes(total)})`;
+    statusEl.textContent = `${pct}% — faltan ${100 - pct}% (${bytes(total - loaded)} de ${bytes(total)})`;
+    setVisualProgress(visualEl, pct, true);
   } else {
     // Indeterminado
     progressEl.removeAttribute('max');
     progressEl.value = null;
     statusEl.textContent = `descargando... (${bytes(loaded)} recibidos)`;
+    setVisualProgress(visualEl, 0, false);
   }
 }
 
-async function downloadWithProgress({url, formData, button, progressEl, statusEl, initialLabel}) {
+
+async function downloadWithProgress({url, formData, button, progressEl, statusEl, initialLabel, visualEl}) {
   setBusy(button, true);
   progressEl.value = 0; progressEl.max = 100; statusEl.textContent = 'Iniciando…';
   button.textContent = 'Descargando…';
@@ -61,11 +78,10 @@ async function downloadWithProgress({url, formData, button, progressEl, statusEl
   if (API_KEY) headers['Authorization'] = API_KEY;
 
   const resp = await fetch(url, { method: 'POST', body: formData, headers });
-
   if (!resp.ok) {
     setBusy(button, false);
     button.textContent = initialLabel;
-    const text = await resp.text().catch(()=>'');
+    const text = await resp.text().catch(()=> '');
     throw new Error(`HTTP ${resp.status}: ${text || resp.statusText}`);
   }
 
@@ -73,33 +89,32 @@ async function downloadWithProgress({url, formData, button, progressEl, statusEl
   const reader = resp.body?.getReader?.();
   if (!reader) {
     const blob = await resp.blob();
-    return {blob, resp};
+    return { blob, resp };
   }
 
   const chunks = [];
   let received = 0;
-  updateProgressUI(progressEl, statusEl, received, total);
+  updateProgressUI(progressEl, statusEl, received, total, visualEl);
 
   while (true) {
-    const {done, value} = await reader.read();
+    const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value);
     received += value.byteLength;
-    updateProgressUI(progressEl, statusEl, received, total);
+    updateProgressUI(progressEl, statusEl, received, total, visualEl);
 
-    const totalKnown = total > 0;
-    if (totalKnown) {
-      const pct = Math.round(received / total * 100);
-      const remain = 100 - pct;
-      button.textContent = `Descargando… ${remain}% restante`;
+    if (total > 0) {
+      const pct = Math.round((received / total) * 100);
+      button.textContent = `Descargando… ${100 - pct}% restante`;
     } else {
       button.textContent = `Descargando…`;
     }
   }
 
   const blob = new Blob(chunks);
-  return {blob, resp};
+  return { blob, resp };
 }
+
 
 function triggerDownload(blob, response) {
   const filename = parseFilenameFromCD(response);
@@ -129,6 +144,7 @@ function resetUI(button, progressEl, statusEl, initialLabel){
   const btn = $('#enc-btn');
   const progressEl = $('#enc-progress');
   const statusEl = $('#enc-status');
+  const visualEl = $('#enc-visual');   // ✅ nueva referencia
   const initialLabel = 'Encriptar';
 
   btn.addEventListener('click', async () => {
@@ -138,26 +154,34 @@ function resetUI(button, progressEl, statusEl, initialLabel){
       const fd = new FormData();
       fd.append('password', passEl.value);
       fd.append('file', fileEl.files[0]);
+
       const {blob, resp} = await downloadWithProgress({
         url: API_BASE + ENDPOINTS.encrypt,
         formData: fd,
         button: btn,
         progressEl, statusEl,
-        initialLabel
+        initialLabel,
+        visualEl                    // ✅ pásala
       });
+
       const name = triggerDownload(blob, resp);
       statusEl.textContent = `Completado: ${name}`;
       btn.textContent = 'Completado ✓';
-      setTimeout(()=> resetUI(btn, progressEl, statusEl, initialLabel), 1200);
+      setTimeout(()=>{
+        resetUI(btn, progressEl, statusEl, initialLabel);
+        setVisualProgress(visualEl, 0, true);   // ✅ reset visual
+      }, 1200);
     }catch(err){
       console.error(err);
       statusEl.textContent = 'Error: ' + (err?.message || err);
       btn.textContent = 'Error';
       setBusy(btn, false);
+      setVisualProgress(visualEl, 0, true);     // ✅ reset visual en error
       setTimeout(()=> resetUI(btn, progressEl, statusEl, initialLabel), 1500);
     }
   });
 })();
+
 
 // =========================
 // DESENCRIPTAR
@@ -168,6 +192,7 @@ function resetUI(button, progressEl, statusEl, initialLabel){
   const btn = $('#dec-btn');
   const progressEl = $('#dec-progress');
   const statusEl = $('#dec-status');
+  const visualEl = $('#dec-visual');   // ✅ nueva referencia
   const initialLabel = 'Desencriptar';
 
   btn.addEventListener('click', async () => {
@@ -183,21 +208,28 @@ function resetUI(button, progressEl, statusEl, initialLabel){
         formData: fd,
         button: btn,
         progressEl, statusEl,
-        initialLabel
+        initialLabel,
+        visualEl                    // ✅ pásala
       });
+
       const name = triggerDownload(blob, resp);
       statusEl.textContent = `Completado: ${name}`;
       btn.textContent = 'Completado ✓';
-      setTimeout(()=> resetUI(btn, progressEl, statusEl, initialLabel), 1200);
+      setTimeout(()=>{
+        resetUI(btn, progressEl, statusEl, initialLabel);
+        setVisualProgress(visualEl, 0, true);   // ✅ reset visual
+      }, 1200);
     }catch(err){
       console.error(err);
       statusEl.textContent = 'Error: ' + (err?.message || err);
       btn.textContent = 'Error';
       setBusy(btn, false);
+      setVisualProgress(visualEl, 0, true);     // ✅ reset visual en error
       setTimeout(()=> resetUI(btn, progressEl, statusEl, initialLabel), 1500);
     }
   });
 })();
+
 
 // =========================
 // ENCRIPTAMIENTO MASIVO
@@ -205,17 +237,16 @@ function resetUI(button, progressEl, statusEl, initialLabel){
 (function setupMassive(){
   const filesEl = $('#mass-files');
   const csvEl = $('#mass-csv');
-  const passEl = $('#mass-pass');
   const btn = $('#mass-btn');
   const progressEl = $('#mass-progress');
   const statusEl = $('#mass-status');
+  const visualEl = $('#mass-visual'); // ✅ nueva referencia
   const initialLabel = 'Encriptar';
 
   btn.addEventListener('click', async () => {
     try{
       if (!filesEl.files?.length) throw new Error('Selecciona al menos un archivo.');
       const fd = new FormData();
-      // múltiples archivos como "file"
       [...filesEl.files].forEach(f => fd.append('file', f));
       if (csvEl.files?.length) fd.append('passwords', csvEl.files[0]);
 
@@ -224,18 +255,22 @@ function resetUI(button, progressEl, statusEl, initialLabel){
         formData: fd,
         button: btn,
         progressEl, statusEl,
-        initialLabel
+        initialLabel,
+        visualEl // ✅ pásala hacia abajo
       });
       const name = triggerDownload(blob, resp);
       statusEl.textContent = `Completado: ${name}`;
       btn.textContent = 'Completado ✓';
       setTimeout(()=> resetUI(btn, progressEl, statusEl, initialLabel), 1200);
+      setVisualProgress(visualEl, 0, true);
     }catch(err){
       console.error(err);
       statusEl.textContent = 'Error: ' + (err?.message || err);
       btn.textContent = 'Error';
       setBusy(btn, false);
+      setVisualProgress(visualEl, 0, true);
       setTimeout(()=> resetUI(btn, progressEl, statusEl, initialLabel), 1500);
     }
   });
 })();
+
