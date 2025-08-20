@@ -1,120 +1,126 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <title>Encriptador — UI espacial</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-  <div class="stars"></div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Crypto omn.pe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap"
+      rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="stars"></div>
 
-  <header>
-    <div class="title">Proyecto Encriptador</div>
-    <div class="subtitle">UI espacial con progreso de descarga en tiempo real</div>
-  </header>
+    <header>
+      <div class="title">Encriptador Crypto omn.pe</div>
+      <div class="subtitle">Encripta/desencripta individual y masivamente tus
+        archivos</div>
+    </header>
 
-  <main class="grid">
-    <!-- ENCRIPTAR -->
-    <section class="card" id="card-encrypt">
-      <div class="card-header">
-        <span class="badge">AES-256-GCM</span>
-        <h3 class="card-title">Encriptar archivo</h3>
-      </div>
-      <p class="card-desc">Sube un archivo y una contraseña. El backend devolverá el archivo encriptado.</p>
-      <div class="card-body">
-        <div class="field">
-          <label for="enc-file">Archivo</label>
-          <input id="enc-file" type="file" />
+    <main class="grid">
+      <!-- ENCRIPTAR -->
+      <section class="card" id="card-encrypt">
+        <div class="card-header">
+          <span class="badge">AES-256-GCM</span>
+          <h3 class="card-title">Encriptar archivo</h3>
         </div>
-        <div class="field">
-          <label for="enc-pass">Contraseña</label>
-          <input id="enc-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
-        </div>
-        <div class="divider"></div>
-        <div class="actions">
-          <button id="enc-btn">Encriptar</button>
-          <div class="progress" aria-live="polite">
-            <progress id="enc-progress" value="0" max="100"></progress>
-            <span id="enc-status" class="status">—</span>
+        <p class="card-desc">Sube un archivo y una contraseña y te devolverá el
+          archivo encriptado.</p>
+        <div class="card-body">
+          <div class="field">
+            <label for="enc-file">Archivo</label>
+            <input id="enc-file" type="file" />
           </div>
-        </div>
-        <div class="hint">Recomendado: contraseñas de al menos 12 caracteres.</div>
-      </div>
-      <div class="footer-hint">
-        <span class="chip">Preserva filename de <code>Content-Disposition</code></span>
-      </div>
-    </section>
-
-    <!-- DESENCRIPTAR -->
-    <section class="card" id="card-decrypt">
-      <div class="card-header">
-        <span class="badge">AES-256-GCM</span>
-        <h3 class="card-title">Desencriptar archivo</h3>
-      </div>
-      <p class="card-desc">Sube un archivo encriptado y su contraseña. Se descargará el original.</p>
-      <div class="card-body">
-        <div class="field">
-          <label for="dec-file">Archivo encriptado</label>
-          <input id="dec-file" type="file" />
-        </div>
-        <div class="field">
-          <label for="dec-pass">Contraseña</label>
-          <input id="dec-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
-        </div>
-        <div class="divider"></div>
-        <div class="actions">
-          <button id="dec-btn">Desencriptar</button>
-          <div class="progress" aria-live="polite">
-            <progress id="dec-progress" value="0" max="100"></progress>
-            <span id="dec-status" class="status">—</span>
+          <div class="field">
+            <label for="enc-pass">Contraseña</label>
+            <input id="enc-pass" type="password" placeholder="••••"
+              autocomplete="current-password" />
           </div>
-        </div>
-        <div class="hint">El backend debe devolver <code>Content-Length</code> para progreso exacto.</div>
-      </div>
-      <div class="footer-hint">
-        <span class="chip">Stream + % restante</span>
-      </div>
-    </section>
-
-    <!-- ENCRIPTAMIENTO MASIVO -->
-    <section class="card" id="card-massive">
-      <div class="card-header">
-        <span class="badge">ZIP stream</span>
-        <h3 class="card-title">Encriptamiento masivo</h3>
-      </div>
-      <p class="card-desc">Sube múltiples archivos y, opcionalmente, un CSV (<em>file_name,password</em>).</p>
-      <div class="card-body">
-        <div class="field">
-          <label for="mass-files">Archivos (múltiples)</label>
-          <input id="mass-files" type="file" multiple />
-        </div>
-        <div class="field">
-          <label for="mass-csv">CSV de contraseñas (opcional)</label>
-          <input id="mass-csv" type="file" accept=".csv,text/csv" />
-        </div>
-        <div class="field">
-          <label for="mass-pass">Contraseña única (si no usas CSV)</label>
-          <input id="mass-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
-        </div>
-        <div class="divider"></div>
-        <div class="actions">
-          <button id="mass-btn">Encriptar</button>
-          <div class="progress" aria-live="polite">
-            <progress id="mass-progress" value="0" max="100"></progress>
-            <span id="mass-status" class="status">—</span>
+          <div class="divider"></div>
+          <div class="actions" style="display: flex; flex-direction: column;">
+            <button id="enc-btn">Encriptar</button>
+            <div class="progress" aria-live="polite">
+              <progress id="enc-progress" value="0" max="100"></progress>
+              <span id="enc-status" class="status">—</span>
+            </div>
           </div>
+          <div class="hint">La contraseña debe tener al menos 1 carácter.</div>
         </div>
-        <div class="hint">El backend devolverá un ZIP en streaming.</div>
-      </div>
-      <div class="footer-hint">
-        <span class="chip">Backpressure-friendly</span>
-      </div>
-    </section>
-  </main>
+        <div class="footer-hint">
+          <span class="chip" style="font-size:x-small;">Agrega .enc al nombre original del archivo
+            <code>Content-Disposition</code></span>
+        </div>
+      </section>
 
-  <script type="module" src="./app.js"></script>
-</body>
+      <!-- DESENCRIPTAR -->
+      <section class="card" id="card-decrypt">
+        <div class="card-header">
+          <span class="badge">AES-256-GCM</span>
+          <h3 class="card-title">Desencriptar archivo</h3>
+        </div>
+        <p class="card-desc">Sube un archivo encriptado y su contraseña. Se
+          descargará el original.</p>
+        <div class="card-body">
+          <div class="field">
+            <label for="dec-file">Archivo .enc</label>
+            <input id="dec-file" type="file" />
+          </div>
+          <div class="field">
+            <label for="dec-pass">Contraseña</label>
+            <input id="dec-pass" type="password" placeholder="••••"
+              autocomplete="current-password" />
+          </div>
+          <div class="divider"></div>
+          <div class="actions" style="display: flex; flex-direction: column;">
+            <button id="dec-btn">Desencriptar</button>
+            <div class="progress" aria-live="polite">
+              <progress id="dec-progress" value="0" max="100"></progress>
+              <span id="dec-status" class="status">—</span>
+            </div>
+          </div>
+          <div class="hint">La contraseña debe tener al menos 1 carácter y el
+            archivo debe tener extension .enc</div>
+        </div>
+        <div class="footer-hint">
+          <span class="chip">Stream + % restante</span>
+        </div>
+      </section>
+
+      <!-- ENCRIPTAMIENTO MASIVO -->
+      <section class="card" id="card-massive">
+        <div class="card-header">
+          <span class="badge">ZIP stream</span>
+          <h3 class="card-title">Encriptamiento masivo</h3>
+        </div>
+        <p class="card-desc">Sube múltiples archivos y un CSV
+          (<em>file_name,password</em>) con las contraseñas.</p>
+        <div class="card-body">
+          <div class="field">
+            <label for="mass-files">Archivos</label>
+            <input id="mass-files" type="file" multiple />
+          </div>
+          <div class="field">
+            <label for="mass-csv">CSV de contraseñas</label>
+            <input id="mass-csv" type="file" accept=".csv,text/csv" />
+          </div>
+          <div class="divider"></div>
+          <div class="actions" style="display: flex; flex-direction: column;">
+            <button id="mass-btn">Encriptar archivos!</button>
+            <div class="progress" aria-live="polite">
+              <progress id="mass-progress" value="0" max="100"></progress>
+              <span id="mass-status" class="status">—</span>
+            </div>
+          </div>
+          <div class="hint">Se devolverá un ZIP en streaming.</div>
+        </div>
+        <div class="footer-hint">
+          <span class="chip">Backpressure-friendly</span>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
 </html>
